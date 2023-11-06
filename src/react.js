@@ -5,7 +5,15 @@ export const createDom = (node) => {
 
   const element = document.createElement(node.tag);
 
+  Object.entries(node.props).forEach(([key, value]) =>
+    element.setAttribute(key, value)
+  );
+
   node.children.map(createDom).forEach((child) => element.appendChild(child));
 
   return element;
+};
+
+export const render = (container, vdom) => {
+  container.appendChild(createDom(vdom));
 };

@@ -1,4 +1,4 @@
-import { createDom } from "./react";
+import { render } from "./react";
 
 const vdom = {
   tag: "div",
@@ -6,7 +6,7 @@ const vdom = {
   children: [
     {
       tag: "h1",
-      props: {},
+      props: { style: "color:red" },
       children: ["Hello"],
     },
     {
@@ -33,4 +33,4 @@ const vdom = {
   ],
 };
 
-document.querySelector("#root").appendChild(createDom(vdom));
+render(document.querySelector("#root"), vdom);
