@@ -14,7 +14,7 @@ export const createDom = (node) => {
   return element;
 };
 
-export const createElement = (tag, props, children) => {
+export const createElement = (tag, props, ...children) => {
   return { tag, props, children };
 };
 
