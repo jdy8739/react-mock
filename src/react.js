@@ -14,6 +14,10 @@ export const createDom = (node) => {
   return element;
 };
 
+export const createElement = (tag, props, children) => {
+  return { tag, props, children };
+};
+
 export const render = (container, vdom) => {
   container.appendChild(createDom(vdom));
 };
