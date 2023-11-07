@@ -15,6 +15,12 @@ export const createDom = (node) => {
 };
 
 export const createElement = (tag, props, ...children) => {
+  props = props || {};
+
+  if (typeof tag === "function") {
+    return tag();
+  }
+
   return { tag, props, children };
 };
 
