@@ -1,14 +1,18 @@
 /* @jsx createElement */
 import { createElement, render } from "./react";
 
-const Title = () => {
-  return <h1>Hi JSX</h1>;
+const Title = ({ color = "grey", children }) => {
+  return <h1 style={`color: ${color}`}>{children}</h1>;
 };
 
 const vdom = (
   <div>
-    <Title></Title>
+    <Title color="blue">
+      Hi JSX
+      <p>sub title</p>
+    </Title>
     <h1>this is jsx</h1>
+    ...
   </div>
 );
 
