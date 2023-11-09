@@ -23,7 +23,7 @@ const Greetings = ({ isBold }) => (
   <h1 style={`font-weight: ${isBold ? "bold" : "normal"}`}>Hello</h1>
 );
 
-const App = (
+const App = () => (
   <div>
     <Greetings isBold={true} />
     <Title color="red">
