@@ -1,5 +1,18 @@
+const checkIsTextNode = (node) => {
+  const nodeType = typeof node;
+
+  if (nodeType !== "function" && nodeType !== "object") {
+    return true;
+  } else if (node === null) {
+    return true;
+  }
+  return false;
+};
+
 export const createDom = (node) => {
-  if (typeof node === "string") {
+  const isTextNode = checkIsTextNode(node);
+
+  if (isTextNode) {
     return document.createTextNode(node);
   }
 
