@@ -9,7 +9,8 @@ const vdom = (
   <div>
     <Title color="blue">
       Hi JSX
-      <p>sub title</p>
+      <h2>sub title</h2>
+      <h3>test</h3>
     </Title>
     <h1>this is jsx</h1>
     ...

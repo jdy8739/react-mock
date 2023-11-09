@@ -24,7 +24,11 @@ export const createElement = (tag, props, ...children) => {
     });
   }
 
-  return { tag, props, children };
+  return {
+    tag,
+    props,
+    children: children.flat(),
+  };
 };
 
 export const render = (container, vdom) => {
