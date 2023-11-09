@@ -23,7 +23,7 @@ const Greetings = ({ isBold }) => (
   <h1 style={`font-weight: ${isBold ? "bold" : "normal"}`}>Hello</h1>
 );
 
-const vdom = (
+const App = (
   <div>
     <Greetings isBold={true} />
     <Title color="red">
@@ -35,4 +35,4 @@ const vdom = (
   </div>
 );
 
-render(document.querySelector("#root"), vdom);
+render(document.querySelector("#root"), <App />);
