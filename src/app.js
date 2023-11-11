@@ -1,5 +1,5 @@
 /* @jsx createElement */
-import { createElement, render } from "./react";
+import { createElement, render, useState } from "./react";
 
 const elements = Array.from({ length: 9 }, (_, i) => i + 1);
 
@@ -23,6 +23,21 @@ const Greetings = ({ isBold }) => (
   <h1 style={`font-weight: ${isBold ? "bold" : "normal"}`}>Hello</h1>
 );
 
+const StateUpdateButton = () => {
+  const [state, setState] = useState(0);
+
+  const handleButtonClick = () => {
+    setState(state + 1);
+  };
+
+  return (
+    <div>
+      press this button to update the state
+      <button onClick={handleButtonClick}>{state}</button>
+    </div>
+  );
+};
+
 const App = () => (
   <div>
     <Greetings isBold={true} />
@@ -31,6 +46,7 @@ const App = () => (
       <h2>sub title</h2>
       <h3>test</h3>
     </Title>
+    <StateUpdateButton />
     <List />
   </div>
 );

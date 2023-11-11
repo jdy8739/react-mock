@@ -1,3 +1,5 @@
+import state from "./state";
+
 const checkIsTextNode = (node) => {
   const nodeType = typeof node;
 
@@ -9,7 +11,7 @@ const checkIsTextNode = (node) => {
   return false;
 };
 
-export const createDom = (node) => {
+const createDom = (node) => {
   const isTextNode = checkIsTextNode(node);
 
   if (isTextNode) {
@@ -27,8 +29,23 @@ export const createDom = (node) => {
   return element;
 };
 
-export const createElement = (tag, props, ...children) => {
+const setStateListElementValue = (value) => {
+  state.stateList[state.currentComponentPosition] = value;
+};
+
+const increaseCurrentCompState = () => {
+  state.currentComponentPosition = state.currentComponentPosition + 1;
+};
+
+const initializeStateList = () => {
+  setStateListElementValue(null);
+  increaseCurrentCompState();
+};
+
+const createElement = (tag, props, ...children) => {
   props = props || {};
+
+  initializeStateList();
 
   if (typeof tag === "function") {
     return tag({
@@ -44,6 +61,23 @@ export const createElement = (tag, props, ...children) => {
   };
 };
 
-export const render = (container, vdom) => {
+const insertStateInCurrentCompPosition = (defaultState) => {
+  setStateListElementValue(defaultState);
+  increaseCurrentCompState();
+};
+
+const useState = (defaultState) => {
+  if (state.stateList[state.currentComponentPosition] === undefined) {
+    insertStateInCurrentCompPosition(defaultState);
+  }
+  const updateState = (valueTodBeUpdate) => {
+    setStateListElementValue(valueTodBeUpdate);
+  };
+  return [state.stateList[state.currentComponentPosition - 1], updateState];
+};
+
+const render = (container, vdom) => {
   container.appendChild(createDom(vdom));
 };
+
+export { useState, render, createElement, createDom };
