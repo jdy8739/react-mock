@@ -20,9 +20,13 @@ const createDom = (node) => {
 
   const element = document.createElement(node.tag);
 
-  Object.entries(node.props).forEach(([key, value]) =>
-    element.setAttribute(key, value)
-  );
+  Object.entries(node.props).forEach(([key, value]) => {
+    /** divide into another function */
+    if (key === "onClick" && typeof value === "function") {
+      element.addEventListener("click", value);
+    }
+    element.setAttribute(key, value);
+  });
 
   node.children.map(createDom).forEach((child) => element.appendChild(child));
 
@@ -77,6 +81,7 @@ const useState = (defaultState) => {
 };
 
 const render = (container, vdom) => {
+  console.log(vdom);
   container.appendChild(createDom(vdom));
 };
 
