@@ -11,6 +11,29 @@ const checkIsTextNode = (node) => {
   return false;
 };
 
+const addEventListenerOnNode = (key, func, element) => {
+  switch (key) {
+    case "onClick": {
+      element.addEventListener("click", func);
+      break;
+    }
+    case "onChange": {
+      element.addEventListener("change", func);
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+};
+
+/**
+ * The function below is needed to be developed.
+ */
+const removeEventListenerOnNode = () => {
+  //
+};
+
 const createDom = (node) => {
   const isTextNode = checkIsTextNode(node);
 
@@ -21,11 +44,11 @@ const createDom = (node) => {
   const element = document.createElement(node.tag);
 
   Object.entries(node.props).forEach(([key, value]) => {
-    /** divide into another function */
-    if (key === "onClick" && typeof value === "function") {
-      element.addEventListener("click", value);
+    if (typeof value === "function") {
+      addEventListenerOnNode(key, value, element);
+    } else {
+      element.setAttribute(key, value);
     }
-    element.setAttribute(key, value);
   });
 
   node.children.map(createDom).forEach((child) => element.appendChild(child));
@@ -75,14 +98,34 @@ const useState = (defaultState) => {
     insertStateInCurrentCompPosition(defaultState);
   }
   const updateState = (valueTodBeUpdate) => {
+    updateVdom();
     setStateListElementValue(valueTodBeUpdate);
   };
   return [state.stateList[state.currentComponentPosition - 1], updateState];
 };
 
-const render = (container, vdom) => {
-  console.log(vdom);
-  container.appendChild(createDom(vdom));
+const makeClosureContextFunctions = () => {
+  let containerClosure;
+  let vdomClosure;
+
+  const registerClosure = (container, vdom) => {
+    containerClosure = container;
+    vdomClosure = vdom;
+  };
+
+  const render = (container, vdom) => {
+    registerClosure(container, vdom);
+    container.appendChild(createDom(vdom));
+  };
+
+  const updateVdom = () => {
+    containerClosure.removeChild(containerClosure.firstChild);
+    containerClosure.appendChild(createDom(vdomClosure));
+  };
+
+  return { render, updateVdom };
 };
+
+const { render, updateVdom } = makeClosureContextFunctions();
 
 export { useState, render, createElement, createDom };
