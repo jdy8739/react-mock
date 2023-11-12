@@ -25,7 +25,6 @@ const Greetings = ({ isBold }) => (
 
 const StateUpdateButton = () => {
   const [state, setState] = useState(0);
-
   const handleButtonClick = () => {
     setState(state + 1);
   };
@@ -52,3 +51,5 @@ const App = () => (
 );
 
 render(document.querySelector("#root"), <App />);
+
+export default App;

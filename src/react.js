@@ -1,3 +1,4 @@
+import App from "./app";
 import state from "./state";
 
 const checkIsTextNode = (node) => {
@@ -64,8 +65,13 @@ const increaseCurrentCompState = () => {
   state.currentComponentPosition = state.currentComponentPosition + 1;
 };
 
+const initializeCurrentCompPosition = () => {
+  state.currentComponentPosition = 1;
+};
+
 const initializeStateList = () => {
-  setStateListElementValue(null);
+  if (state.stateList[state.currentComponentPosition] === undefined)
+    setStateListElementValue(null);
   increaseCurrentCompState();
 };
 
@@ -73,6 +79,7 @@ const createElement = (tag, props, ...children) => {
   props = props || {};
 
   initializeStateList();
+  // console.log(state.stateList, state.currentComponentPosition);
 
   if (typeof tag === "function") {
     return tag({
@@ -88,39 +95,41 @@ const createElement = (tag, props, ...children) => {
   };
 };
 
-const insertStateInCurrentCompPosition = (defaultState) => {
-  setStateListElementValue(defaultState);
-  increaseCurrentCompState();
-};
-
 const useState = (defaultState) => {
-  if (state.stateList[state.currentComponentPosition] === undefined) {
-    insertStateInCurrentCompPosition(defaultState);
+  let position = state.currentComponentPosition;
+
+  if (state.stateList[position] === undefined) {
+    setStateListElementValue(defaultState);
   }
-  const updateState = (valueTodBeUpdate) => {
+
+  const updateState = (valueTodBeUpdated) => {
+    state.stateList[position] = valueTodBeUpdated;
     updateVdom();
-    setStateListElementValue(valueTodBeUpdate);
   };
-  return [state.stateList[state.currentComponentPosition - 1], updateState];
+  return [state.stateList[position], updateState];
 };
 
 const makeClosureContextFunctions = () => {
   let containerClosure;
-  let vdomClosure;
 
-  const registerClosure = (container, vdom) => {
+  const registerClosure = (container) => {
     containerClosure = container;
-    vdomClosure = vdom;
+  };
+
+  const addVdomOnParentContainer = (vdom) => {
+    containerClosure.appendChild(createDom(vdom));
   };
 
   const render = (container, vdom) => {
-    registerClosure(container, vdom);
-    container.appendChild(createDom(vdom));
+    registerClosure(container);
+    addVdomOnParentContainer(vdom);
+    initializeCurrentCompPosition();
   };
 
   const updateVdom = () => {
     containerClosure.removeChild(containerClosure.firstChild);
-    containerClosure.appendChild(createDom(vdomClosure));
+    addVdomOnParentContainer(App());
+    initializeCurrentCompPosition();
   };
 
   return { render, updateVdom };
