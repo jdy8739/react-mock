@@ -1,6 +1,18 @@
 import App from "./app";
 import state from "./state";
 
+/**
+ * 설계 수정 방안
+ * 1. currentComponentPosition이 증가되는 기점을 컴포넌트(함수가)가 바뀌거나 useState가 호출되는 경우에만으로 교체.
+ * 2. 이후에 해당 값을 가지고 배열 내의 state를 참조
+ * 3. 해당 방안으로 state가 업데이트되는 컴포넌트를 재렌더링
+ */
+
+const TARGET_DATA_FOR_RERENDER = {
+  targetCompPosition: 0,
+  targetElement: null,
+};
+
 const checkIsTextNode = (node) => {
   const nodeType = typeof node;
 
@@ -42,6 +54,11 @@ const createDom = (node) => {
     return document.createTextNode(node);
   }
 
+  // console.log(node);
+  if (node.componentPosition === TARGET_DATA_FOR_RERENDER.targetCompPosition) {
+    // console.log(node.componentPosition);
+  }
+
   const element = document.createElement(node.tag);
 
   Object.entries(node.props).forEach(([key, value]) => {
@@ -79,7 +96,7 @@ const createElement = (tag, props, ...children) => {
   props = props || {};
 
   initializeStateList();
-  // console.log(state.stateList, state.currentComponentPosition);
+  // console.log(state.stateList, props, state.currentComponentPosition - 1);
 
   if (typeof tag === "function") {
     return tag({
@@ -88,10 +105,13 @@ const createElement = (tag, props, ...children) => {
     });
   }
 
+  console.log(tag, children, state.currentComponentPosition - 1);
+
   return {
     tag,
     props,
     children: children.flat(),
+    componentPosition: state.currentComponentPosition - 1,
   };
 };
 
@@ -102,9 +122,17 @@ const useState = (defaultState) => {
     setStateListElementValue(defaultState);
   }
 
-  const updateState = (valueTodBeUpdated) => {
-    state.stateList[position] = valueTodBeUpdated;
-    updateVdom();
+  const updateState = (stateTodBeUpdated) => {
+    const currentState = state.stateList[position];
+
+    if (currentState !== stateTodBeUpdated) {
+      state.stateList[position] = stateTodBeUpdated;
+
+      TARGET_DATA_FOR_RERENDER.targetCompPosition = position;
+      console.log("position", position);
+
+      reRender();
+    }
   };
   return [state.stateList[position], updateState];
 };
@@ -122,19 +150,20 @@ const makeClosureContextFunctions = () => {
 
   const render = (container, vdom) => {
     registerClosure(container);
+    // console.log(vdom);
     addVdomOnParentContainer(vdom);
     initializeCurrentCompPosition();
   };
 
-  const updateVdom = () => {
+  const reRender = () => {
     containerClosure.removeChild(containerClosure.firstChild);
     addVdomOnParentContainer(App());
     initializeCurrentCompPosition();
   };
 
-  return { render, updateVdom };
+  return { render, reRender };
 };
 
-const { render, updateVdom } = makeClosureContextFunctions();
+const { render, reRender } = makeClosureContextFunctions();
 
 export { useState, render, createElement, createDom };

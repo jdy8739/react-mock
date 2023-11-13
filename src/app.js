@@ -25,6 +25,7 @@ const Greetings = ({ isBold }) => (
 
 const StateUpdateButton = () => {
   const [state, setState] = useState(0);
+
   const handleButtonClick = () => {
     setState(state + 1);
   };
@@ -32,7 +33,11 @@ const StateUpdateButton = () => {
   return (
     <div>
       press this button to update the state
-      <button onClick={handleButtonClick}>{state}</button>
+      <button onClick={handleButtonClick}>
+        <span>{state}</span>
+      </button>
+      hmmmm
+      <span>hmmmmmm</span>
     </div>
   );
 };
@@ -47,6 +52,7 @@ const App = () => (
     </Title>
     <StateUpdateButton />
     <List />
+    {true ? <div>1</div> : <div>2</div>}
   </div>
 );
 
