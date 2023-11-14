@@ -23,6 +23,20 @@ const Greetings = ({ isBold }) => (
   <h1 style={`font-weight: ${isBold ? "bold" : "normal"}`}>Hello</h1>
 );
 
+const Inner = () => {
+  const [state, setState] = useState(0);
+
+  const handleButtonClick = () => {
+    setState(state + 1);
+  };
+
+  return <div>
+     <button onClick={handleButtonClick}>
+        <span>{state}</span>
+      </button>
+    <div>inner {state}</div></div>
+}
+
 const StateUpdateButton = () => {
   const [state, setState] = useState(0);
 
@@ -37,6 +51,7 @@ const StateUpdateButton = () => {
         <span>{state}</span>
       </button>
       hmmmm
+      <Inner />
       <span>hmmmmmm</span>
     </div>
   );
@@ -53,6 +68,7 @@ const App = () => (
     <StateUpdateButton />
     <List />
     {true ? <div>1</div> : <div>2</div>}
+    <StateUpdateButton />
   </div>
 );
 

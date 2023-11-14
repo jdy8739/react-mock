@@ -11,6 +11,7 @@ import state from "./state";
 const TARGET_DATA_FOR_RERENDER = {
   targetCompPosition: 0,
   targetElement: null,
+  targetValue: 0,
 };
 
 const checkIsTextNode = (node) => {
@@ -54,12 +55,18 @@ const createDom = (node) => {
     return document.createTextNode(node);
   }
 
-  // console.log(node);
-  if (node.componentPosition === TARGET_DATA_FOR_RERENDER.targetCompPosition) {
-    // console.log(node.componentPosition);
-  }
-
   const element = document.createElement(node.tag);
+
+  // console.log(node);
+  if (node.componentPosition === TARGET_DATA_FOR_RERENDER.targetValue) {
+    console.log(node);
+    // console.log(node.componentPosition);
+    // TARGET_DATA_FOR_RERENDER.targetElement = element;
+
+    // 중복 감지 방지를 위해 초기화 필요
+    TARGET_DATA_FOR_RERENDER.targetCompPosition = 0;
+    TARGET_DATA_FOR_RERENDER.targetValue = 0;
+  }
 
   Object.entries(node.props).forEach(([key, value]) => {
     if (typeof value === "function") {
@@ -83,44 +90,43 @@ const increaseCurrentCompState = () => {
 };
 
 const initializeCurrentCompPosition = () => {
-  state.currentComponentPosition = 1;
-};
-
-const initializeStateList = () => {
-  if (state.stateList[state.currentComponentPosition] === undefined)
-    setStateListElementValue(null);
-  increaseCurrentCompState();
+  state.currentComponentPosition = 0;
 };
 
 const createElement = (tag, props, ...children) => {
   props = props || {};
 
-  initializeStateList();
-  // console.log(state.stateList, props, state.currentComponentPosition - 1);
+  // console.log(state.stateList)
 
   if (typeof tag === "function") {
+
+    TARGET_DATA_FOR_RERENDER.targetCompPosition++;
+
     return tag({
       ...props,
       children: children.length === 1 ? children[0] : children,
     });
   }
 
-  console.log(tag, children, state.currentComponentPosition - 1);
-
   return {
     tag,
     props,
     children: children.flat(),
-    componentPosition: state.currentComponentPosition - 1,
+    componentPosition: TARGET_DATA_FOR_RERENDER.targetCompPosition,
   };
 };
 
 const useState = (defaultState) => {
   let position = state.currentComponentPosition;
 
+
+  let aaa = TARGET_DATA_FOR_RERENDER.targetCompPosition;
+
   if (state.stateList[position] === undefined) {
-    setStateListElementValue(defaultState);
+    setStateListElementValue(defaultState ?? null);
   }
+
+  increaseCurrentCompState();
 
   const updateState = (stateTodBeUpdated) => {
     const currentState = state.stateList[position];
@@ -128,8 +134,7 @@ const useState = (defaultState) => {
     if (currentState !== stateTodBeUpdated) {
       state.stateList[position] = stateTodBeUpdated;
 
-      TARGET_DATA_FOR_RERENDER.targetCompPosition = position;
-      console.log("position", position);
+      TARGET_DATA_FOR_RERENDER.targetValue = aaa;
 
       reRender();
     }
@@ -150,15 +155,19 @@ const makeClosureContextFunctions = () => {
 
   const render = (container, vdom) => {
     registerClosure(container);
-    // console.log(vdom);
+    console.log(vdom);
     addVdomOnParentContainer(vdom);
     initializeCurrentCompPosition();
+
+    TARGET_DATA_FOR_RERENDER.targetCompPosition = 1;
   };
 
   const reRender = () => {
     containerClosure.removeChild(containerClosure.firstChild);
     addVdomOnParentContainer(App());
     initializeCurrentCompPosition();
+
+    TARGET_DATA_FOR_RERENDER.targetCompPosition = 1;
   };
 
   return { render, reRender };
